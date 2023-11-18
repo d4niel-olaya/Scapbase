@@ -1,0 +1,6 @@
+.overlay {
+    position: absolute;
+    border: 2px dashed red;
+    pointer-events: none;
+    display: none;
+}
