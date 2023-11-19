@@ -1,42 +1,48 @@
+<!-- App.svelte -->
 <script lang="ts">
-    import { onMount } from "svelte";
-    let selectionOverlay : HTMLDivElement
-    let isSelecting = false;
-    let startX : number, startY : number;
-
-
-    onMount(() =>  
-    {
-
-        document.addEventListener('mousedown', (e) => {
-            isSelecting = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            selectionOverlay.style.display = 'block';
-            selectionOverlay.style.left = startX + 'px';
-            selectionOverlay.style.top = startY + 'px';
-        });
-    
-        document.addEventListener('mousemove', (e) => {
-            if (isSelecting) {
-                const currentX = e.clientX;
-                const currentY = e.clientY;
-                const width = currentX - startX;
-                const height = currentY - startY;
-    
-                selectionOverlay.style.width = width + 'px';
-                selectionOverlay.style.height = height + 'px';
-            }
-        });
-    
-        document.addEventListener('mouseup', () => {
-            isSelecting = false;
-            selectionOverlay.style.display = 'none';
-            selectionOverlay.style.width = '0';
-            selectionOverlay.style.height = '0';
-        });
-    })
-
-</script>
-
-<div class="overlay" id="selectionOverlay" bind:this={selectionOverlay}></div>
+    import type { IBox, IDimension } from "../base/types";
+    let selecting = false;
+    let selectionBox  : IBox= { top:100, width:100, height:100, left:0}; 
+    let startPosition : IDimension = {x:0, y:0};
+    let endPosition  : IDimension = {x:0, y:0};
+  
+    function handleMouseDown(event: MouseEvent) {
+      selecting = true;
+      startPosition = { x: event.clientX, y: event.clientY };
+    }
+  
+    function handleMouseMove(event:MouseEvent) {
+      if (selecting) {
+        endPosition = { x: event.clientX, y: event.clientY };
+        selectionBox = {
+          top: Math.min(startPosition.y, endPosition.y),
+          left: Math.min(startPosition.x, endPosition.x),
+          width: Math.abs(startPosition.x - endPosition.x),
+          height: Math.abs(startPosition.y - endPosition.y),
+        };
+      }
+    }
+  
+    function handleMouseUp() {
+      selecting = false;
+      // Aquí puedes hacer algo con la selección, por ejemplo, enviarla a un script de fondo.
+      console.log('Selección:', selectionBox);
+    }
+  </script>
+  
+  <style>
+    .selection-box {
+      position: absolute;
+      border: 2px dashed #007bff;
+      pointer-events: none;
+    }
+  </style>
+  
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div on:mousedown={handleMouseDown} on:mousemove={handleMouseMove} on:mouseup={handleMouseUp}>
+    <div
+      class="selection-box"
+      style="top: {selectionBox.top}px; left: {selectionBox.left}px; width: {selectionBox.width}px; height: {selectionBox.height}px;"
+    ></div>
+  </div>
+  
