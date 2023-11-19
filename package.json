@@ -22,6 +22,7 @@
 	"type": "module",
 	"dependencies": {
 		"@types/chrome": "^0.0.251",
-		"chrome-types": "^0.1.246"
+		"chrome-types": "^0.1.246",
+		"sveltekit-adapter-chrome-extension": "^2.0.0"
 	}
 }
